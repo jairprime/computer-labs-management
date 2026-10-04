@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% block body %}
+
+{% with messages = get_flashed_messages(with_categories=True) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="card card-body">
+    <form action="/add_data" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="d-flex justify-content-end">
+            <a href="/login" class="btn btn-outline-primary my-2 my-sm-0">Login</a>
+        </div>
+        <div class="form-group">
+            <label for="identificador_laboratorio">Identificador de laboratorio</label>
+            <select name="identificador_laboratorio" class="form-control" required>
+                <option value="" disabled {% if not form_data %}selected{% endif %}>Selecciona un laboratorio</option>
+                {% for value in [
+                "Laboratorio de Competencias Digitales 1",
+                "Laboratorio de Competencias Digitales 3",
+                "Laboratorio de Redes",
+                ] %}
+                <option value="{{ value }}" {% if form_data and form_data.identificador_laboratorio==value %}selected{% endif
+                    %}>{{ value }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="nombre_docente">Nombre de docente</label>
+            <input type="text" name="nombre_docente" class="form-control" required
+                value="{{ form_data.nombre_docente if form_data else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="correo_electronico">Correo institucional</label>
+            <input type="email" name="correo_electronico" class="form-control" required
+                value="{{ form_data.correo_electronico if form_data else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="programa">Programa</label>
+            <input type="text" name="programa" class="form-control" required
+                value="{{ form_data.programa if form_data else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="hora_ingreso">Hora de ingreso</label>
+            <input type="time" name="hora_ingreso" class="form-control" required
+                value="{{ form_data.hora_ingreso if form_data else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="hora_salida">Hora de salida</label>
+            <input type="time" name="hora_salida" class="form-control" required
+                value="{{ form_data.hora_salida if form_data else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="observacion">Observaciones</label>
+            <textarea name="observacion" class="form-control" required>{{ form_data.observacion if form_data else '' }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+    </form>
+</div>
+<div style="margin-top: 40px;"></div>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+.header {
+    background-color: #3b5998;
+    color: white;
+    padding: 10px;
+    width: 110%;
+    margin-left: -60px;
+}
+
+.header a {
+    color: white;
+    text-decoration: none;
+    margin-left: 15px;
+}
+
+.header a:hover {
+    text-decoration: underline;
+}
+
+table {
+    width: 110%;
+    margin-left: 0px;
+}
+
+.table-responsive {
+    width: 110%;
+    margin-left: -60px;
+}

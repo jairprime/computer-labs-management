@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+
+<div class="header d-flex justify-content-end header-restore">
+    <h5>
+        <a href="/users">Volver</a>
+    </h5>
+</div>
+
+<div class="restore-container">
+    <center>
+        <h3 class="restore-title">Actualizar</h3>
+    </center>
+
+    <form action="/restore/{{ id }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-group">
+            <p class="readonly-field">{{ username }}</p>
+        </div>
+
+        <div class="form-group password-wrapper">
+            <input class="form-control input-custom" name="password" minlength="8" required placeholder="&#128273 Contraseña" type="password" id="password">
+            <button type="button" id="togglePassword" class="toggle-btn">
+                <img id="eyeIcon" src="{{ url_for('static', filename='img/eye-closed.png')}}" alt="Ver contraseña">
+            </button>
+        </div>
+
+        {% if message == 2 %}
+        <div class="alert alert-danger alert-dismissible fade show custom-alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            &#9997 Por favor, ingrese su contraseña.
+        </div>
+        {% endif %}
+
+        {% if message == 6 %}
+        <div class="alert alert-danger alert-dismissible fade show custom-alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            &#9997 La contraseña debe tener al menos 8 caracteres.
+        </div>
+        {% endif %}
+
+        <div class="form-group password-wrapper">
+            <input class="form-control input-custom" name="confirmation" minlength="8" required placeholder="&#128273 Confirmar Contraseña" type="password" id="confirmation">
+            <button type="button" id="toggleConfirmation" class="toggle-btn">
+                <img id="eyeIconConfirmation" src="{{ url_for('static', filename='img/eye-closed.png') }}" alt="Ver contraseña">
+            </button>
+        </div>
+
+        {% if message == 4 %}
+        <div class="alert alert-danger alert-dismissible fade show custom-alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            &#9997 Por favor, confirme su contraseña.
+        </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button class="btn btn-success btn-save" type="submit">Guardar</button>
+        </div>
+
+        {% if message == 3 %}
+        <div class="alert alert-danger alert-dismissible fade show custom-alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            &#10060 Las contraseñas no coinciden. Por favor, inténtelo de nuevo.
+        </div>
+        {% endif %}
+
+        {% if message == 5 %}
+        <div class="alert alert-danger alert-dismissible fade show custom-alert">
+            <button type='button' class='close' data-dismiss='alert' aria-label='close'>
+                <span aria-hidden='true'>&times;</span>
+            </button>
+            &#9997 Nombre de usuario ya está en uso.
+        </div>
+        {% endif %}
+
+    </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/button.js') }}"></script>
+
+{% endblock %}

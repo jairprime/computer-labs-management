@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+
+<div class="header d-flex justify-content-end">
+    <h5>
+        <a href="/">Volver</a>
+    </h5>
+</div>
+
+<div class="login-container">
+    <center>
+        <h2 class="login-title">Iniciar sesión</h2>
+    </center>
+
+    <form action="/login" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control input-custom" required
+                   name="username" id="username"
+                   placeholder="👤 Nombre de usuario" type="text">
+        </div>
+
+        {% if message == 1 %}
+        <div class="alert alert-danger alert-dismissible fade show custom-alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            &#9997 Por favor, ingrese su nombre de usuario.
+        </div>
+        {% endif %}
+
+        <div class="form-group password-wrapper">
+            <input class="form-control input-custom" required
+                   name="password" placeholder="&#128273 Contraseña" type="password" id="password">
+            <button type="button" id="togglePassword" class="toggle-btn">
+                <img id="eyeIcon" src="{{ url_for('static', filename='img/eye-closed.png')}}" alt="Ver contraseña">
+            </button>
+        </div>
+
+        {% if message == 2 %}
+        <div class="alert alert-danger alert-dismissible fade show custom-alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            &#9997 Por favor, ingrese su contraseña.
+        </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button class="btn btn-success btn-login" type="submit">Iniciar sesión</button>
+        </div>
+    </form>
+
+    {% if message == 3 %}
+    <div class="alert alert-danger alert-dismissible fade show custom-alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        &#10060 Nombre de usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.
+    </div>
+    {% endif %}
+
+</div>
+
+<script src="{{ url_for('static', filename='js/button.js') }}"></script>
+
+{% endblock %}

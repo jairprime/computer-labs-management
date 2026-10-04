@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles2.css')}}">
+
+<div class="header d-flex justify-content-end">
+    <h5>
+        <a href="/admin">Volver</a>
+    </h5>
+</div>
+
+<div class="container mt-4" style="width: 110%; margin-left: -60px;">
+    <h2 style="margin-bottom: 20px;">Generar reporte por fecha</h2>
+    <form action="{{ url_for('generate') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+            <label for="start_date">Fecha de inicio</label>
+            <input type="date" class="form-control" id="start_date" name="start_date" required style="width: 107%;">
+        </div>
+        <div class="form-group">
+            <label for="end_date">Fecha de fin</label>
+            <input type="date" class="form-control" id="end_date" name="end_date" required style="width: 107%;">
+        </div>
+        <button type="submit" class="btn btn-secondary">Generar</button>
+    </form>
+</div>
+
+{% endblock %}

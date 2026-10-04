@@ -1,0 +1,111 @@
+.input-custom {
+    border-radius: 10px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+}
+
+.toggle-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+.btn-save,
+.btn-login {
+    border-radius: 10px;
+    width: 100%;
+    max-width: 400px;
+    font-weight: 500;
+}
+
+.custom-alert {
+    border-radius: 10px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    margin: 18px auto 0;
+    font-size: 14px;
+}
+
+.register-container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    min-height: 550px;
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 12px 19px rgba(0, 0, 0, 0.2);
+}
+
+.register-title {
+    margin-top: 14px;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+.header-restore {
+    position: relative;
+    left: -50px;
+}
+
+.restore-container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    min-height: 550px;
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 12px 19px rgba(0, 0, 0, 0.2);
+}
+
+.restore-title {
+    margin: 10px 0 30px 0;
+    font-weight: 600;
+}
+
+.readonly-field {
+    border-radius: 10px;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background: #f9f9f9;
+}
+
+.login-container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    min-height: 550px;
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 12px 19px rgba(0, 0, 0, 0.2);
+}
+
+.login-title {
+    margin: 14px 0 30px 0;
+    font-weight: 600;
+}
