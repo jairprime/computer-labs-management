@@ -1,26 +1,27 @@
 # Control de Laboratorios de Sistemas
 
-Aplicación web para reportar y dar seguimiento a incidentes en los laboratorios de sistemas de la Universidad CESMAG, construida con **Flask 2.3 + Jinja2** y **PostgreSQL** (vía `psycopg` 3, sin ORM). Cualquier docente puede reportar un incidente desde un formulario público, y el personal de Infraestructura TI lo gestiona, responde por correo y exporta reportes en Excel desde un panel protegido con login.
+Aplicación web para reportar y dar seguimiento a las incidencias de las salas de cómputo de la Universidad CESMAG, construida con **Flask 2.3** y **PostgreSQL**. Cualquier docente reporta una incidencia desde un formulario público sin necesidad de cuenta, y el personal de Infraestructura TI la gestiona desde un panel protegido con login: responde, edita o elimina reportes, avisa por correo al docente cuando hay respuesta y exporta los registros a Excel.
 
 ## Stack
 
-| Capa          | Tecnología                                                 |
-| ------------- | ---------------------------------------------------------- |
-| Backend       | Python 3.12, Flask 2.3, Flask-WTF (CSRF), Flask-Limiter    |
-| Base de datos | PostgreSQL, psycopg 3 + psycopg-pool                       |
-| Reportes      | pandas, XlsxWriter                                         |
-| Correo        | Gmail SMTP (`smtplib`) con contraseña de aplicación        |
-| UI            | Jinja2, Bootstrap 4 (Bootswatch Materia, CDN)              |
-| Despliegue    | Gunicorn, Render                                           |
+| Capa          | Tecnología                                                     |
+| ------------- | -------------------------------------------------------------- |
+| Backend       | Python 3.12, Flask 2.3, Gunicorn                               |
+| Base de datos | PostgreSQL con `psycopg` 3 y `psycopg-pool` (sin ORM)          |
+| Seguridad     | Flask-WTF (CSRF), Flask-Limiter, hashes de Werkzeug            |
+| Reportes      | pandas, XlsxWriter                                             |
+| Correo        | Gmail SMTP con contraseña de aplicación                        |
+| UI            | Plantillas Jinja2, JavaScript, Bootstrap 4 (Bootswatch Materia) |
+| Despliegue    | Render                                                         |
 
 ## Características
 
-- **Formulario público** de incidentes: fecha, laboratorio, docente, correo institucional (`@unicesmag.edu.co`), programa, horario y observación.
-- **Panel de administración** (requiere login): listar, editar, responder y eliminar reportes.
-- **Notificación por correo**: al guardar una respuesta, se envía automáticamente un email al docente que reportó.
-- **Gestión de administradores**: crear usuarios, restablecer contraseñas y eliminarlos.
-- **Reportes en Excel**: filtra incidentes por rango de fechas y descárgalos como `.xlsx`.
-- **Seguridad**: protección CSRF, contraseñas con hash `pbkdf2:sha256`, límite de 10 intentos de login por minuto por IP y cookies de sesión `Secure` en producción.
+- **Formulario público de incidencias**: el docente elige el laboratorio, escribe su nombre, correo institucional, programa, hora de ingreso y salida y la observación. Se valida que todos los campos estén llenos, que el nombre solo tenga letras y espacios, que el correo termine en `@unicesmag.edu.co` y que la hora de salida sea posterior a la de ingreso.
+- **Panel de administración** (requiere login): lista todos los reportes del más reciente al más antiguo y permite editarlos, responderlos o eliminarlos.
+- **Aviso por correo**: al guardar una respuesta nueva o distinta a la anterior, se envía un correo al docente con el texto de la respuesta. El envío corre en un hilo aparte para no bloquear la petición.
+- **Gestión de administradores**: crear cuentas, restablecer contraseñas (mínimo 8 caracteres) y eliminarlas. Solo es accesible con la sesión iniciada.
+- **Reportes en Excel**: filtra las incidencias por rango de fechas y descarga el resultado como `.xlsx` con encabezados con formato y columnas ajustadas al contenido.
+- **Seguridad**: protección CSRF en todos los formularios, límite de 10 intentos de login por minuto por IP, contraseñas guardadas como hash `pbkdf2:sha256`, consultas parametrizadas, borrados solo por POST y cookies de sesión `SameSite=Lax` y `Secure` en producción.
 
 ## Estructura
 
@@ -30,36 +31,36 @@ computer-labs-management/
 ├── helpers.py             # Decorador login_required
 ├── templates/             # Vistas Jinja2
 │   ├── layout.html        # Plantilla base
-│   ├── index.html         # Formulario público de incidentes
+│   ├── index.html         # Formulario público de incidencias
 │   ├── login.html
-│   ├── admin.html         # Listado de incidentes
-│   ├── edit.html          # Editar / responder incidente
+│   ├── admin.html         # Listado de reportes
+│   ├── edit.html          # Editar y responder un reporte
 │   ├── users.html         # Gestión de administradores
-│   ├── register.html
+│   ├── register.html      # Crear administrador
 │   ├── restore.html       # Restablecer contraseña
-│   ├── reports.html
-│   └── generate.html      # Filtro por fechas y descarga
+│   ├── reports.html       # Selección del rango de fechas
+│   └── generate.html      # Vista previa y descarga del Excel
 ├── static/
 │   ├── css/
-│   ├── js/
-│   └── img/
+│   ├── img/               # Logos
+│   └── js/
 ├── requirements.txt
-├── runtime.txt            # Versión de Python para Render
-└── Procfile               # web: gunicorn app:app
+├── runtime.txt            # Versión de Python
+└── Procfile               # Comando de arranque en Render
 ```
 
 ## Requisitos
 
 - Python 3.12 o superior
-- PostgreSQL accesible (local, Docker, Supabase, Render, etc.)
-- Una cuenta de Gmail con [contraseña de aplicación](https://support.google.com/accounts/answer/185833) para el envío de correos
+- Una base de datos PostgreSQL accesible (local, Docker, Render, Supabase, etc.)
+- Una cuenta de Gmail con verificación en dos pasos y una [contraseña de aplicación](https://myaccount.google.com/apppasswords) para enviar los correos
 
 ## Instalación
 
 ```bash
-git clone https://github.com/jairprime/computer-labs-management
+git clone https://github.com/jairprime/computer-labs-management.git
 cd computer-labs-management
-python -m venv venv
+python3 -m venv venv
 ```
 
 Activa el entorno virtual:
@@ -77,7 +78,7 @@ venv\Scripts\activate.bat
 
 > Si PowerShell bloquea el script, ejecuta una vez: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
 
-Instala las dependencias:
+Instala las dependencias (Gunicorn ya está incluido):
 
 ```bash
 pip install -r requirements.txt
@@ -91,61 +92,68 @@ Crea un archivo `.env` en la raíz del proyecto (ya está incluido en `.gitignor
 SECRET_KEY=una_clave_larga_y_aleatoria
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=nombre_de_tu_base
+DB_NAME=nombre_de_la_base
 DB_USER=usuario
 DB_PASSWORD=contraseña
 EMAIL_USER=cuenta@gmail.com
 EMAIL_PASS=contraseña_de_aplicacion
 ```
 
-| Variable      | Descripción                                                                 |
-| ------------- | --------------------------------------------------------------------------- |
-| `SECRET_KEY`  | Firma las sesiones. Si falta, se genera una aleatoria en cada arranque.      |
-| `DB_HOST`     | Host de PostgreSQL                                                           |
-| `DB_PORT`     | Puerto de PostgreSQL (por defecto `5432`)                                    |
-| `DB_NAME`     | Nombre de la base de datos                                                   |
-| `DB_USER`     | Usuario de la base de datos                                                  |
-| `DB_PASSWORD` | Contraseña de la base de datos                                               |
-| `EMAIL_USER`  | Cuenta de Gmail que envía las notificaciones                                 |
-| `EMAIL_PASS`  | Contraseña de aplicación de Gmail                                            |
+| Variable      | Descripción                                                                                     |
+| ------------- | ----------------------------------------------------------------------------------------------- |
+| `SECRET_KEY`  | Firma las sesiones. Si falta se genera una aleatoria y las sesiones se pierden en cada reinicio |
+| `DB_HOST`     | Servidor de PostgreSQL                                                                          |
+| `DB_PORT`     | Puerto de PostgreSQL (normalmente `5432`)                                                       |
+| `DB_NAME`     | Nombre de la base de datos                                                                      |
+| `DB_USER`     | Usuario de la base de datos                                                                     |
+| `DB_PASSWORD` | Contraseña de la base de datos                                                                  |
+| `EMAIL_USER`  | Cuenta de Gmail que envía los avisos                                                            |
+| `EMAIL_PASS`  | Contraseña de aplicación de Gmail, no la contraseña normal. Si falta, no se envían correos      |
+| `RENDER`      | La define Render automáticamente; activa las cookies `Secure`. No la pongas en local            |
+
+Genera la `SECRET_KEY` con:
+
+```bash
+python -c "import secrets; print(secrets.token_hex(32))"
+```
 
 ### Base de datos
 
-La aplicación no incluye migraciones, así que las tablas deben existir antes de arrancar. Este es un esquema de referencia inferido del código; el orden de las columnas de `control_laboratorios_sistemas` importa porque la exportación a Excel lo usa tal cual:
+La aplicación no incluye migraciones, así que las tablas se crean a mano. Este esquema se deduce de las consultas de `app.py`; el orden de las columnas de `control_laboratorios_sistemas` importa, porque la exportación a Excel lo usa:
 
 ```sql
 CREATE TABLE control_laboratorios_sistemas (
     id                        SERIAL PRIMARY KEY,
-    fecha_registro            TIMESTAMP NOT NULL,
-    identificador_laboratorio TEXT NOT NULL,
-    nombre_docente            TEXT NOT NULL,
-    correo_electronico        TEXT NOT NULL,
-    programa                  TEXT NOT NULL,
-    hora_ingreso              TIME NOT NULL,
-    hora_salida               TIME NOT NULL,
-    observacion               TEXT NOT NULL,
+    fecha_registro            TIMESTAMP    NOT NULL,
+    identificador_laboratorio VARCHAR(100) NOT NULL,
+    nombre_docente            VARCHAR(150) NOT NULL,
+    correo_electronico        VARCHAR(150) NOT NULL,
+    programa                  VARCHAR(150) NOT NULL,
+    hora_ingreso              TIME         NOT NULL,
+    hora_salida               TIME         NOT NULL,
+    observacion               TEXT         NOT NULL,
     respuesta_incidencia      TEXT
 );
 
 CREATE TABLE users (
     id              SERIAL PRIMARY KEY,
-    username        TEXT UNIQUE NOT NULL,
-    hashed_password TEXT NOT NULL
+    username        VARCHAR(100) NOT NULL UNIQUE,
+    hashed_password TEXT         NOT NULL
 );
 ```
 
 ### Primer administrador
 
-El registro de usuarios (`/register`) solo está disponible con una sesión iniciada, así que el primer administrador se crea a mano. Genera el hash de la contraseña:
+Crear administradores desde `/register` requiere tener la sesión iniciada, así que el primero se inserta directamente en la base. Genera el hash de la contraseña:
 
 ```bash
 python -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('tu_contraseña', method='pbkdf2:sha256', salt_length=8))"
 ```
 
-E insértalo en la base:
+E insértalo en PostgreSQL:
 
 ```sql
-INSERT INTO users (username, hashed_password) VALUES ('admin', '<hash_generado>');
+INSERT INTO users (username, hashed_password) VALUES ('admin', '<hash generado>');
 ```
 
 ## Desarrollo
@@ -154,7 +162,7 @@ INSERT INTO users (username, hashed_password) VALUES ('admin', '<hash_generado>'
 python app.py
 ```
 
-La aplicación queda disponible en <http://localhost:5000>.
+La aplicación queda disponible en <http://localhost:5000> (formulario) y <http://localhost:5000/login> (panel).
 
 ## Producción
 
@@ -162,35 +170,43 @@ La aplicación queda disponible en <http://localhost:5000>.
 gunicorn app:app
 ```
 
+> El límite de intentos de login se guarda en memoria, así que solo es exacto con un único worker de Gunicorn, que es lo que usa el `Procfile`.
+
 ### Despliegue en Render
 
-1. Sube el código a un repositorio de GitHub.
-2. Crea un nuevo **Web Service** en <https://dashboard.render.com> y conecta el repositorio.
-3. Selecciona Python como entorno.
-4. Configura las variables de entorno de la sección [Configuración](#configuración).
-5. El `Procfile` ya define el comando de arranque (`web: gunicorn app:app`) y `runtime.txt` fija la versión de Python.
+1. En <https://dashboard.render.com> crea un **Web Service** y conecta este repositorio de GitHub.
+2. Configura el servicio:
 
-Render vuelve a desplegar automáticamente en cada push.
+   | Opción          | Valor                             |
+   | --------------- | --------------------------------- |
+   | Runtime         | Python                            |
+   | Build Command   | `pip install -r requirements.txt` |
+   | Start Command   | `gunicorn app:app` (ya en el `Procfile`) |
+   | Variables       | `SECRET_KEY`, `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `EMAIL_USER`, `EMAIL_PASS` |
+
+3. Crea las tablas y el primer administrador en la base de datos de producción (ver [Base de datos](#base-de-datos)).
+4. Pulsa **Create Web Service**. Cada `git push` a `main` vuelve a desplegar automáticamente.
 
 ## Rutas
 
-| Método    | Ruta                 | Descripción                                     | Auth |
-| --------- | -------------------- | ----------------------------------------------- | ---- |
-| GET       | `/`                  | Formulario público de incidentes                | No   |
-| POST      | `/add_data`          | Registra un incidente                           | No   |
-| GET, POST | `/login`             | Inicio de sesión (máx. 10 intentos/min por IP)  | No   |
-| GET       | `/admin`             | Listado de incidentes                           | Sí   |
-| GET       | `/edit/<id>`         | Formulario de edición / respuesta               | Sí   |
-| POST      | `/update/<id>`       | Actualiza el incidente y notifica por correo    | Sí   |
-| POST      | `/delete/<id>`       | Elimina un incidente                            | Sí   |
-| GET       | `/users`             | Listado de administradores                      | Sí   |
-| GET, POST | `/register`          | Crea un administrador                           | Sí   |
-| GET, POST | `/restore/<id>`      | Restablece la contraseña de un administrador    | Sí   |
-| POST      | `/deleteuser/<id>`   | Elimina un administrador                        | Sí   |
-| GET       | `/reports`           | Página de reportes                              | Sí   |
-| GET, POST | `/generate`          | Filtra incidentes por rango de fechas           | Sí   |
-| GET       | `/download`          | Descarga el reporte filtrado en `.xlsx`         | Sí   |
-| GET       | `/logout`            | Cierra la sesión                                | Sí   |
+| Método    | Ruta               | Descripción                                             | Auth |
+| --------- | ------------------ | ------------------------------------------------------- | ---- |
+| GET       | `/`                | Formulario público de incidencias                       | No   |
+| POST      | `/add_data`        | Guarda una incidencia                                   | No   |
+| GET, POST | `/login`           | Inicio de sesión (máx. 10 intentos/min por IP)          | No   |
+| GET       | `/admin`           | Listado de reportes                                     | Sí   |
+| GET       | `/goback`          | Vuelve al listado de reportes                           | Sí   |
+| GET       | `/edit/<id>`       | Formulario para editar o responder un reporte           | Sí   |
+| POST      | `/update/<id>`     | Guarda los cambios y, si hay respuesta nueva, avisa por correo | Sí   |
+| POST      | `/delete/<id>`     | Elimina un reporte                                      | Sí   |
+| GET       | `/users`           | Listado de administradores                              | Sí   |
+| GET, POST | `/register`        | Crea un administrador                                   | Sí   |
+| GET, POST | `/restore/<id>`    | Restablece la contraseña de un administrador            | Sí   |
+| POST      | `/deleteuser/<id>` | Elimina un administrador                                | Sí   |
+| GET       | `/reports`         | Selección del rango de fechas                           | Sí   |
+| GET, POST | `/generate`        | Vista previa de los reportes filtrados                  | Sí   |
+| GET       | `/download`        | Descarga el Excel del último filtro aplicado            | Sí   |
+| GET       | `/logout`          | Cierra la sesión                                        | Sí   |
 
 ## Autor
 
