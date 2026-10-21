@@ -21,9 +21,9 @@
 {% with messages = get_flashed_messages(with_categories=True) %}
 {% if messages %}
 {% for category, message in messages %}
-<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="width: 110%; margin-left: -60px;">
+<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
     {{ message }}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-top: 0px;">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
@@ -32,7 +32,7 @@
 {% endwith %}
 
 <div class="table-responsive">
-    <table class="table table-striped table-bordered bg-white">
+    <table class="table table-striped table-bordered bg-white table-cards">
         <thead>
             <tr>
                 <th><b>Fecha</b></th>
@@ -48,20 +48,20 @@
             </tr>
         </thead>
         <tbody>
-            {% for data in data %}
+            {% for row in data %}
             <tr>
-                <td>{{ data.1 }}</td>
-                <td>{{ data.2 }}</td>
-                <td>{{ data.3 }}</td>
-                <td>{{ data.4 }}</td>
-                <td>{{ data.5 }}</td>
-                <td>{{ data.6 }}</td>
-                <td>{{ data.7 }}</td>
-                <td>{{ data.8 }}</td>
-                <td>{{ data.9 or '' }}</td>
-                <td>
-                    <a href="/edit/{{data.0}}" class="btn btn-secondary">Editar</a>
-                    <form action="/delete/{{data.0}}" method="POST" style="display:inline;">
+                <td data-label="Fecha">{{ row.fecha_registro }}</td>
+                <td data-label="Laboratorio">{{ row.identificador_laboratorio }}</td>
+                <td data-label="Nombres">{{ row.nombre_docente }}</td>
+                <td data-label="Correo electrónico" class="cell-email">{{ row.correo_electronico }}</td>
+                <td data-label="Programa">{{ row.programa }}</td>
+                <td data-label="Hora de ingreso">{{ row.hora_ingreso }}</td>
+                <td data-label="Hora de salida">{{ row.hora_salida }}</td>
+                <td data-label="Observaciones">{{ row.observacion }}</td>
+                <td data-label="Respuesta">{{ row.respuesta_incidencia or '' }}</td>
+                <td data-label="Operaciones">
+                    <a href="/edit/{{ row.id }}" class="btn btn-secondary">Editar</a>
+                    <form action="/delete/{{ row.id }}" method="POST" style="display:inline;">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn btn-danger btn-delete">Eliminar</button>
                     </form>

@@ -22,13 +22,9 @@
         </div>
         <div class="form-group">
             <label for="identificador_laboratorio">Identificador de laboratorio</label>
-            <select name="identificador_laboratorio" class="form-control" required>
+            <select name="identificador_laboratorio" id="identificador_laboratorio" class="form-control" required>
                 <option value="" disabled {% if not form_data %}selected{% endif %}>Selecciona un laboratorio</option>
-                {% for value in [
-                "Laboratorio de Competencias Digitales 1",
-                "Laboratorio de Competencias Digitales 3",
-                "Laboratorio de Redes",
-                ] %}
+                {% for value in laboratorios %}
                 <option value="{{ value }}" {% if form_data and form_data.identificador_laboratorio==value %}selected{% endif
                     %}>{{ value }}</option>
                 {% endfor %}
@@ -36,32 +32,32 @@
         </div>
         <div class="form-group">
             <label for="nombre_docente">Nombre de docente</label>
-            <input type="text" name="nombre_docente" class="form-control" required
+            <input type="text" name="nombre_docente" id="nombre_docente" class="form-control" required
                 value="{{ form_data.nombre_docente if form_data else '' }}">
         </div>
         <div class="form-group">
             <label for="correo_electronico">Correo institucional</label>
-            <input type="email" name="correo_electronico" class="form-control" required
+            <input type="email" name="correo_electronico" id="correo_electronico" class="form-control" required
                 value="{{ form_data.correo_electronico if form_data else '' }}">
         </div>
         <div class="form-group">
             <label for="programa">Programa</label>
-            <input type="text" name="programa" class="form-control" required
+            <input type="text" name="programa" id="programa" class="form-control" required
                 value="{{ form_data.programa if form_data else '' }}">
         </div>
         <div class="form-group">
             <label for="hora_ingreso">Hora de ingreso</label>
-            <input type="time" name="hora_ingreso" class="form-control" required
+            <input type="time" name="hora_ingreso" id="hora_ingreso" class="form-control" required
                 value="{{ form_data.hora_ingreso if form_data else '' }}">
         </div>
         <div class="form-group">
             <label for="hora_salida">Hora de salida</label>
-            <input type="time" name="hora_salida" class="form-control" required
+            <input type="time" name="hora_salida" id="hora_salida" class="form-control" required
                 value="{{ form_data.hora_salida if form_data else '' }}">
         </div>
         <div class="form-group">
             <label for="observacion">Observaciones</label>
-            <textarea name="observacion" class="form-control" required>{{ form_data.observacion if form_data else '' }}</textarea>
+            <textarea name="observacion" id="observacion" class="form-control" required>{{ form_data.observacion if form_data else '' }}</textarea>
         </div>
         <button type="submit" class="btn btn-primary">Enviar</button>
     </form>

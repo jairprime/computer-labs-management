@@ -1,12 +1,12 @@
 # Control de Laboratorios de Sistemas
 
-Aplicación web para reportar y dar seguimiento a las incidencias de las salas de cómputo de la Universidad CESMAG, construida con **Flask 2.3** y **PostgreSQL**. Cualquier docente reporta una incidencia desde un formulario público sin necesidad de cuenta, y el personal de Infraestructura TI la gestiona desde un panel protegido con login: responde, edita o elimina reportes, avisa por correo al docente cuando hay respuesta y exporta los registros a Excel.
+Aplicación web para reportar y dar seguimiento a las incidencias de las salas de cómputo de la Universidad CESMAG, construida con **Flask 3.1** y **PostgreSQL**. Cualquier docente reporta una incidencia desde un formulario público sin necesidad de cuenta, y el personal de Infraestructura TI la gestiona desde un panel protegido con login: responde, edita o elimina reportes, avisa por correo al docente cuando hay respuesta y exporta los registros a Excel.
 
 ## Stack
 
 | Capa          | Tecnología                                                     |
 | ------------- | -------------------------------------------------------------- |
-| Backend       | Python 3.12, Flask 2.3, Gunicorn                               |
+| Backend       | Python 3.12, Flask 3.1, Gunicorn                               |
 | Base de datos | PostgreSQL con `psycopg` 3 y `psycopg-pool` (sin ORM)          |
 | Seguridad     | Flask-WTF (CSRF), Flask-Limiter, hashes de Werkzeug            |
 | Reportes      | pandas, XlsxWriter                                             |
@@ -19,9 +19,9 @@ Aplicación web para reportar y dar seguimiento a las incidencias de las salas d
 - **Formulario público de incidencias**: el docente elige el laboratorio, escribe su nombre, correo institucional, programa, hora de ingreso y salida y la observación. Se valida que todos los campos estén llenos, que el nombre solo tenga letras y espacios, que el correo termine en `@unicesmag.edu.co` y que la hora de salida sea posterior a la de ingreso.
 - **Panel de administración** (requiere login): lista todos los reportes del más reciente al más antiguo y permite editarlos, responderlos o eliminarlos.
 - **Aviso por correo**: al guardar una respuesta nueva o distinta a la anterior, se envía un correo al docente con el texto de la respuesta. El envío corre en un hilo aparte para no bloquear la petición.
-- **Gestión de administradores**: crear cuentas, restablecer contraseñas (mínimo 8 caracteres) y eliminarlas. Solo es accesible con la sesión iniciada.
+- **Gestión de administradores**: crear cuentas, restablecer contraseñas (mínimo 8 caracteres) y eliminarlas. Solo es accesible con la sesión iniciada. Un administrador no puede eliminar su propia cuenta, así que siempre queda al menos uno, y quien es eliminado pierde el acceso de inmediato.
 - **Reportes en Excel**: filtra las incidencias por rango de fechas y descarga el resultado como `.xlsx` con encabezados con formato y columnas ajustadas al contenido.
-- **Seguridad**: protección CSRF en todos los formularios, límite de 10 intentos de login por minuto por IP, contraseñas guardadas como hash `pbkdf2:sha256`, consultas parametrizadas, borrados solo por POST y cookies de sesión `SameSite=Lax` y `Secure` en producción.
+- **Seguridad**: protección CSRF en todos los formularios, límite de 10 intentos de login y 10 envíos del formulario por minuto por IP, contraseñas guardadas como hash `pbkdf2:sha256`, consultas parametrizadas, borrados solo por POST, exportación a Excel sin fórmulas (el texto se guarda como texto) y cookies de sesión `SameSite=Lax` y `Secure` en producción.
 
 ## Estructura
 
@@ -29,6 +29,8 @@ Aplicación web para reportar y dar seguimiento a las incidencias de las salas d
 computer-labs-management/
 ├── app.py                 # Rutas y lógica de la aplicación
 ├── helpers.py             # Decorador login_required
+├── sql/
+│   └── schema.sql         # Tablas de la base de datos
 ├── templates/             # Vistas Jinja2
 │   ├── layout.html        # Plantilla base
 │   ├── index.html         # Formulario público de incidencias
@@ -119,28 +121,13 @@ python -c "import secrets; print(secrets.token_hex(32))"
 
 ### Base de datos
 
-La aplicación no incluye migraciones, así que las tablas se crean a mano. Este esquema se deduce de las consultas de `app.py`; el orden de las columnas de `control_laboratorios_sistemas` importa, porque la exportación a Excel lo usa:
+La aplicación no incluye migraciones; las tablas están en `sql/schema.sql`. Créalas en una base vacía con:
 
-```sql
-CREATE TABLE control_laboratorios_sistemas (
-    id                        SERIAL PRIMARY KEY,
-    fecha_registro            TIMESTAMP    NOT NULL,
-    identificador_laboratorio VARCHAR(100) NOT NULL,
-    nombre_docente            VARCHAR(150) NOT NULL,
-    correo_electronico        VARCHAR(150) NOT NULL,
-    programa                  VARCHAR(150) NOT NULL,
-    hora_ingreso              TIME         NOT NULL,
-    hora_salida               TIME         NOT NULL,
-    observacion               TEXT         NOT NULL,
-    respuesta_incidencia      TEXT
-);
-
-CREATE TABLE users (
-    id              SERIAL PRIMARY KEY,
-    username        VARCHAR(100) NOT NULL UNIQUE,
-    hashed_password TEXT         NOT NULL
-);
+```bash
+psql -h <host> -p <puerto> -U <usuario> -d <base> -f sql/schema.sql
 ```
+
+En Supabase también puedes pegar el contenido del archivo en el **SQL Editor** y ejecutarlo.
 
 ### Primer administrador
 
@@ -170,7 +157,7 @@ La aplicación queda disponible en <http://localhost:5000> (formulario) y <http:
 gunicorn app:app
 ```
 
-> El límite de intentos de login se guarda en memoria, así que solo es exacto con un único worker de Gunicorn, que es lo que usa el `Procfile`.
+> El límite de intentos de login se guarda en memoria, así que solo es exacto con un único worker de Gunicorn, que es lo que usa `gunicorn app:app` por defecto.
 
 ### Despliegue en Render
 
@@ -181,7 +168,7 @@ gunicorn app:app
    | --------------- | --------------------------------- |
    | Runtime         | Python                            |
    | Build Command   | `pip install -r requirements.txt` |
-   | Start Command   | `gunicorn app:app` (ya en el `Procfile`) |
+   | Start Command   | `gunicorn app:app` (el mismo del `Procfile`) |
    | Variables       | `SECRET_KEY`, `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `EMAIL_USER`, `EMAIL_PASS` |
 
 3. Crea las tablas y el primer administrador en la base de datos de producción (ver [Base de datos](#base-de-datos)).
@@ -192,10 +179,9 @@ gunicorn app:app
 | Método    | Ruta               | Descripción                                             | Auth |
 | --------- | ------------------ | ------------------------------------------------------- | ---- |
 | GET       | `/`                | Formulario público de incidencias                       | No   |
-| POST      | `/add_data`        | Guarda una incidencia                                   | No   |
+| POST      | `/add_data`        | Guarda una incidencia (máx. 10 envíos/min por IP)       | No   |
 | GET, POST | `/login`           | Inicio de sesión (máx. 10 intentos/min por IP)          | No   |
 | GET       | `/admin`           | Listado de reportes                                     | Sí   |
-| GET       | `/goback`          | Vuelve al listado de reportes                           | Sí   |
 | GET       | `/edit/<id>`       | Formulario para editar o responder un reporte           | Sí   |
 | POST      | `/update/<id>`     | Guarda los cambios y, si hay respuesta nueva, avisa por correo | Sí   |
 | POST      | `/delete/<id>`     | Elimina un reporte                                      | Sí   |

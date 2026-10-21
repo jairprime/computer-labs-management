@@ -10,9 +10,7 @@
 </div>
 
 <div class="login-container">
-    <center>
-        <h2 class="login-title">Iniciar sesión</h2>
-    </center>
+    <h2 class="login-title text-center">Iniciar sesión</h2>
 
     <form action="/login" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -34,7 +32,7 @@
         <div class="form-group password-wrapper">
             <input class="form-control input-custom" required
                    name="password" placeholder="&#128273 Contraseña" type="password" id="password">
-            <button type="button" id="togglePassword" class="toggle-btn">
+            <button type="button" id="togglePassword" class="toggle-btn" aria-label="Mostrar u ocultar contraseña">
                 <img id="eyeIcon" src="{{ url_for('static', filename='img/eye-closed.png')}}" alt="Ver contraseña">
             </button>
         </div>
@@ -59,6 +57,15 @@
             <span aria-hidden="true">&times;</span>
         </button>
         &#10060 Nombre de usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.
+    </div>
+    {% endif %}
+
+    {% if message == 4 %}
+    <div class="alert alert-danger alert-dismissible fade show custom-alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        &#9203 Demasiados intentos. Espere un minuto e inténtelo de nuevo.
     </div>
     {% endif %}
 

@@ -15,43 +15,43 @@
 {% endwith %}
 
 <div class="card card-body">
-    <form action="/update/{{id.0}}" method="POST">
+    <form action="/update/{{ record.id }}" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="form-group">
             <label for="fecha_registro">Fecha de registro</label>
-            <input type="text" name="fecha_registro" value="{{id.1}}" placeholder="" class="form-control">
+            <input type="text" name="fecha_registro" id="fecha_registro" value="{{ record.fecha_registro }}" class="form-control">
         </div>
         <div class="form-group">
             <label for="identificador_laboratorio">Identificador de laboratorio</label>
-            <input type="text" name="identificador_laboratorio" value="{{id.2}}" placeholder="" class="form-control">
+            <input type="text" name="identificador_laboratorio" id="identificador_laboratorio" value="{{ record.identificador_laboratorio }}" class="form-control">
         </div>
         <div class="form-group">
             <label for="nombre_docente">Nombre de docente</label>
-            <input type="text" name="nombre_docente" value="{{id.3}}" placeholder="" class="form-control">
+            <input type="text" name="nombre_docente" id="nombre_docente" value="{{ record.nombre_docente }}" class="form-control">
         </div>
         <div class="form-group">
             <label for="correo_electronico">Correo electrónico</label>
-            <input type="text" name="correo_electronico" value="{{id.4}}" placeholder="" class="form-control">
+            <input type="text" name="correo_electronico" id="correo_electronico" value="{{ record.correo_electronico }}" class="form-control">
         </div>
         <div class="form-group">
-            <label for="programa">programa</label>
-            <input type="text" name="programa" value="{{id.5}}" placeholder="" class="form-control">
+            <label for="programa">Programa</label>
+            <input type="text" name="programa" id="programa" value="{{ record.programa }}" class="form-control">
         </div>
         <div class="form-group">
             <label for="hora_ingreso">Hora de ingreso</label>
-            <input type="time" name="hora_ingreso" value="{{id.6}}" placeholder="" class="form-control">
+            <input type="time" name="hora_ingreso" id="hora_ingreso" value="{{ record.hora_ingreso }}" class="form-control">
         </div>
         <div class="form-group">
             <label for="hora_salida">Hora de salida</label>
-            <input type="time" name="hora_salida" value="{{id.7}}" placeholder="" class="form-control">
+            <input type="time" name="hora_salida" id="hora_salida" value="{{ record.hora_salida }}" class="form-control">
         </div>
         <div class="form-group">
             <label for="observacion">Observaciones</label>
-            <textarea name="observacion" placeholder="" class="form-control">{{id.8}}</textarea>
+            <textarea name="observacion" id="observacion" class="form-control">{{ record.observacion }}</textarea>
         </div>
         <div class="form-group">
             <label for="respuesta_incidencia">Respuesta de incidencias</label>
-            <textarea name="respuesta_incidencia" placeholder="" class="form-control">{{ id.9 or '' }}</textarea>
+            <textarea name="respuesta_incidencia" id="respuesta_incidencia" class="form-control">{{ record.respuesta_incidencia or '' }}</textarea>
         </div>
         <button type="submit" class="btn btn-primary">Modificar</button>
     </form>

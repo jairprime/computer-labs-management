@@ -62,11 +62,6 @@
     font-weight: 600;
 }
 
-.header-restore {
-    position: relative;
-    left: -50px;
-}
-
 .restore-container {
     position: relative;
     width: 100%;

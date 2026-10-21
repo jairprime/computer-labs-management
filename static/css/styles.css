@@ -36,4 +36,10 @@ table {
     h1 {
         font-size: 5.5vw !important;
     }
+
+    /* Smaller logos so they and the title fit on narrow phones */
+    .logo-lab {
+        width: 56px;
+        height: 56px;
+    }
 }

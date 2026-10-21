@@ -3,16 +3,14 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
 
-<div class="header d-flex justify-content-end header-restore">
+<div class="header d-flex justify-content-end">
     <h5>
         <a href="/users">Volver</a>
     </h5>
 </div>
 
 <div class="restore-container">
-    <center>
-        <h3 class="restore-title">Actualizar</h3>
-    </center>
+    <h3 class="restore-title text-center">Actualizar</h3>
 
     <form action="/restore/{{ id }}" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -23,7 +21,7 @@
 
         <div class="form-group password-wrapper">
             <input class="form-control input-custom" name="password" minlength="8" required placeholder="&#128273 Contraseña" type="password" id="password">
-            <button type="button" id="togglePassword" class="toggle-btn">
+            <button type="button" id="togglePassword" class="toggle-btn" aria-label="Mostrar u ocultar contraseña">
                 <img id="eyeIcon" src="{{ url_for('static', filename='img/eye-closed.png')}}" alt="Ver contraseña">
             </button>
         </div>
@@ -48,7 +46,7 @@
 
         <div class="form-group password-wrapper">
             <input class="form-control input-custom" name="confirmation" minlength="8" required placeholder="&#128273 Confirmar Contraseña" type="password" id="confirmation">
-            <button type="button" id="toggleConfirmation" class="toggle-btn">
+            <button type="button" id="toggleConfirmation" class="toggle-btn" aria-label="Mostrar u ocultar confirmación">
                 <img id="eyeIconConfirmation" src="{{ url_for('static', filename='img/eye-closed.png') }}" alt="Ver contraseña">
             </button>
         </div>
@@ -72,15 +70,6 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             &#10060 Las contraseñas no coinciden. Por favor, inténtelo de nuevo.
-        </div>
-        {% endif %}
-
-        {% if message == 5 %}
-        <div class="alert alert-danger alert-dismissible fade show custom-alert">
-            <button type='button' class='close' data-dismiss='alert' aria-label='close'>
-                <span aria-hidden='true'>&times;</span>
-            </button>
-            &#9997 Nombre de usuario ya está en uso.
         </div>
         {% endif %}
 

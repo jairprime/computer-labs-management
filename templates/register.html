@@ -10,9 +10,7 @@
 </div>
 
 <div class="register-container">
-    <center>
-        <h3 class="register-title">Registrar</h3>
-    </center>
+    <h3 class="register-title text-center">Registrar</h3>
 
     <form action="/register" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -34,7 +32,7 @@
         <div class="form-group password-wrapper">
             <input class="form-control input-custom" name="password" minlength="8" required
                    placeholder="&#128273 Contraseña" type="password" id="password">
-            <button type="button" id="togglePassword" class="toggle-btn">
+            <button type="button" id="togglePassword" class="toggle-btn" aria-label="Mostrar u ocultar contraseña">
                 <img id="eyeIcon" src="{{ url_for('static', filename='img/eye-closed.png')}}" alt="Ver contraseña">
             </button>
         </div>
@@ -60,7 +58,7 @@
         <div class="form-group password-wrapper">
             <input class="form-control input-custom" name="confirmation" minlength="8" required
                    placeholder="&#128273 Confirmar Contraseña" type="password" id="confirmation">
-            <button type="button" id="toggleConfirmation" class="toggle-btn">
+            <button type="button" id="toggleConfirmation" class="toggle-btn" aria-label="Mostrar u ocultar confirmación">
                 <img id="eyeIconConfirmation" src="{{ url_for('static', filename='img/eye-closed.png') }}" alt="Ver contraseña">
             </button>
         </div>

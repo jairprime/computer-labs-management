@@ -2,8 +2,6 @@
     background-color: #3b5998;
     color: white;
     padding: 10px;
-    width: 110%;
-    margin-left: -60px;
 }
 
 .header a {
@@ -16,12 +14,53 @@
     text-decoration: underline;
 }
 
-table {
-    width: 110%;
-    margin-left: 0px;
+/* Admin tables have many columns: use almost the full screen width on large screens */
+@media (min-width: 992px) {
+    .container {
+        max-width: 95%;
+    }
 }
 
-.table-responsive {
-    width: 110%;
-    margin-left: -60px;
+/* Long emails can wrap so the column doesn't stretch the whole table */
+.cell-email {
+    overflow-wrap: anywhere;
+}
+
+/* Phones and tablets: show each table row as a card, one field per line */
+@media (max-width: 991.98px) {
+    .table-cards thead {
+        display: none;
+    }
+
+    .table-cards tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid #dee2e6;
+    }
+
+    .table-cards td {
+        display: block;
+        border: none;
+        border-bottom: 1px solid #eee;
+    }
+
+    .table-cards td::before {
+        content: attr(data-label);
+        display: block;
+        font-weight: bold;
+    }
+}
+
+/* Small laptops: compact table so all columns fit without scrolling */
+@media (min-width: 992px) and (max-width: 1279.98px) {
+    .table-cards th,
+    .table-cards td {
+        padding: 6px;
+        font-size: 14px;
+    }
+
+    .table-cards .btn {
+        padding: 4px 10px;
+        font-size: 14px;
+    }
 }
